@@ -18,6 +18,7 @@ export default function AccountManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [tableData, setTableData] = useState([]);
   const [isModalShow, setIsModalShow] = useState(false);
+  const totalPage = Math.ceil(tableData.length / ITEMS_PER_PAGE) || 1;
 
   useEffect(() => {
     setTableData(localStorageHelper.getItem(LS_KEY.USER_INFO) ?? []);
@@ -67,7 +68,7 @@ export default function AccountManagement() {
         onItemClick={handleEditUserRole}
       />
       <Pagination
-        totalPage={Math.ceil(tableData.length / ITEMS_PER_PAGE) || 1}
+        totalPage={totalPage}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
