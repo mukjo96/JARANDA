@@ -1,33 +1,27 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import SearchBox from 'pages/Admin/SearchBox.jsx';
-import Table from 'components/Table/table';
-import { AiOutlineUserAdd } from 'react-icons/ai';
 import styled from '@emotion/styled';
-import TableHeader from 'components/Table/tableHeader';
-import Pagination from 'pages/Admin/Pagination';
-
+import { AiOutlineUserAdd } from 'react-icons/ai';
 import { localStorageHelper } from 'utils/localStorageHelper';
-import LS_KEY from 'constants/localStorageKey';
+import { setUserInfo } from 'services/utils/LocalStorageWorker';
 import SignupModal from 'modal/SignupModal';
+import LS_KEY from 'constants/localStorageKey';
+import Table from 'components/Table/table';
+import TableHeader from 'components/Table/tableHeader';
+import SearchBox from 'pages/Admin/SearchBox.jsx';
+import Pagination from 'pages/Admin/Pagination';
 
 const dataProps = ['id', 'name', 'address', 'cardInfo', 'age', 'role'];
 
 const ITEMS_PER_PAGE = 10;
 
 export default function AccountManagement() {
-  const [totalPage, setTotalPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [tableData, setTableData] = useState([]);
   const [isModalShow, setIsModalShow] = useState(false);
 
   useEffect(() => {
-    setTableData(localStorageHelper.getItem(LS_KEY.USER_INFO) || []);
+    setTableData(localStorageHelper.getItem(LS_KEY.USER_INFO) ?? []);
   }, []);
-
-  useEffect(() => {
-    const lastPage = Math.ceil(tableData.length / ITEMS_PER_PAGE);
-    setTotalPage(lastPage ? lastPage : 1);
-  }, [tableData]);
 
   const handleOnSearch = useCallback(result => {
     setTableData(result);
@@ -46,9 +40,19 @@ export default function AccountManagement() {
     currentPage * ITEMS_PER_PAGE,
   );
 
+  const handleEditUserRole = data => {
+    setUserInfo(data);
+    const newTableData = tableData;
+    const index = tableData.findIndex(user => user.id === data.id);
+    if (index !== -1) {
+      newTableData[index] = data;
+      setTableData([...newTableData]);
+    }
+  };
+
   return (
     <TableContainer>
-      <HeaderContainer className="header">
+      <HeaderContainer>
         <TableHeader title="계정 관리" number={tableData.length} />
         <ButtonContainer>
           <SearchBox handleOnSearch={handleOnSearch} />
@@ -60,11 +64,10 @@ export default function AccountManagement() {
       <Table
         dataProps={dataProps}
         currentPageData={currentPageData}
-        tableData={tableData}
-        setTableData={setTableData}
+        onItemClick={handleEditUserRole}
       />
       <Pagination
-        totalPage={totalPage}
+        totalPage={Math.ceil(tableData.length / ITEMS_PER_PAGE) || 1}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />

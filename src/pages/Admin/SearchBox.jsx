@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import React, { useCallback, useEffect, useState } from 'react';
 import USER from 'constants/user.js';
 import Dropdown from 'components/Dropdown/DropDown';
-import { RiArrowDownSFill } from 'react-icons/ri';
+import { BiChevronDown } from 'react-icons/bi';
 import useDebounce from 'utils/hooks/useDebounce';
 import { searchUsersByOption } from 'services/utils/searchUsersByOption.js';
 
@@ -54,7 +54,7 @@ export default function SearchBox({ handleOnSearch }) {
       <Dropdown
         visibleOption={
           <>
-            {USER.KO[selectedOption.toUpperCase()]} <RiArrowDownSFill />
+            {USER.KO[selectedOption.toUpperCase()]} <BiChevronDown />
           </>
         }
         optionList={['id', 'name', 'address', 'age']}

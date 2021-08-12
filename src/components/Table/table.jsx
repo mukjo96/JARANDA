@@ -1,9 +1,8 @@
 import styled from '@emotion/styled';
 import Dropdown from 'components/Dropdown/DropDown';
 import React from 'react';
-import { RiArrowDownSFill } from 'react-icons/ri';
+import { BiChevronDown } from 'react-icons/bi';
 import { BsFillInboxFill } from 'react-icons/bs';
-import { setUserInfo } from 'services/utils/LocalStorageWorker';
 import USER from 'constants/user';
 import ROLE, { ROLE_KR } from 'constants/role';
 
@@ -40,18 +39,8 @@ const dataPropsMapper = {
 
 const roleList = [ROLE.PARENT, ROLE.TEACHER, ROLE.ADMIN];
 
-const Table = ({ dataProps, currentPageData, tableData, setTableData }) => {
-  const handleEditUserRole = data => {
-    setUserInfo(data);
-    const newTableData = tableData;
-    const index = tableData.findIndex(user => user.id === data.id);
-    if (index !== -1) {
-      newTableData[index] = data;
-      setTableData([...newTableData]);
-    }
-  };
-
-  return tableData.length === 0 ? (
+const Table = ({ dataProps, currentPageData, onItemClick }) => {
+  return currentPageData.length === 0 ? (
     <EmptyContainer>
       <BsFillInboxFill />
       <EmptyMessage>검색 결과가 없습니다.</EmptyMessage>
@@ -71,34 +60,28 @@ const Table = ({ dataProps, currentPageData, tableData, setTableData }) => {
         <tbody>
           {currentPageData.map((data, index) => (
             <TableRow key={index}>
-              {dataProps.map((props, index) =>
-                props === 'role' ? (
-                  <TableData
-                    key={`${props} ${index}`}
-                    data={data[props]}
-                    className={`${props}_table`}
-                  >
+              {dataProps.map((props, index) => (
+                <TableData
+                  key={`${props} ${index}`}
+                  data={data[props]}
+                  className={`${props}_table`}
+                >
+                  {props === 'role' ? (
                     <Dropdown
                       visibleOption={renderUserRoleTag(
                         dataPropsMapper[props].parseData(data[props]),
                       )}
                       optionList={roleList}
                       onItemClick={value =>
-                        handleEditUserRole({ ...data, role: value })
+                        onItemClick({ ...data, role: value })
                       }
                       print={roleToKor}
                     />
-                  </TableData>
-                ) : (
-                  <TableData
-                    key={`${props} ${index}`}
-                    data={data[props]}
-                    className={`${props}_table`}
-                  >
-                    {dataPropsMapper[props].parseData(data[props])}
-                  </TableData>
-                ),
-              )}
+                  ) : (
+                    dataPropsMapper[props].parseData(data[props])
+                  )}
+                </TableData>
+              ))}
             </TableRow>
           ))}
         </tbody>
@@ -148,11 +131,11 @@ const EmptyContainer = styled.div`
   vertical-align: center;
   text-align: center;
   font-size: 15vh;
-  color: darkgray;
+  color: #aac14f;
 `;
 
 const EmptyMessage = styled.p`
-  font-size: 1.5vh;
+  font-size: 2vh;
   color: #333;
 `;
 
@@ -164,6 +147,36 @@ const StyledTable = styled.table`
   table-layout: fixed;
   padding: 0 8px;
   border-spacing: 0 8px;
+
+  tr {
+    .id_table {
+      width: 15%;
+    }
+
+    .name_table {
+      width: 15%;
+    }
+
+    .address_table {
+      width: 20%;
+    }
+
+    .cardInfo_table {
+      width: 20%;
+    }
+
+    .age_table {
+      width: 10%;
+    }
+
+    .role_table {
+      width: 10%;
+    }
+
+    .sibling_table {
+      width: 10%;
+    }
+  }
 `;
 
 const TableHeader = styled.tr`
@@ -173,34 +186,6 @@ const TableHeader = styled.tr`
   text-align: center;
   color: darkgray;
   text-align: center;
-
-  .id_table {
-    width: 15%;
-  }
-
-  .name_table {
-    width: 15%;
-  }
-
-  .address_table {
-    width: 20%;
-  }
-
-  .cardInfo_table {
-    width: 20%;
-  }
-
-  .age_table {
-    width: 10%;
-  }
-
-  .role_table {
-    width: 10%;
-  }
-
-  .sibling_table {
-    width: 10%;
-  }
 `;
 
 const TableRow = styled.tr`
@@ -210,37 +195,11 @@ const TableRow = styled.tr`
   white-space: nowrap;
   background-color: white;
   border-radius: 15px;
-
-  .id_table {
-    width: 15%;
-  }
-
-  .name_table {
-    width: 15%;
-  }
-
-  .address_table {
-    width: 20%;
-  }
-
-  .cardInfo_table {
-    width: 20%;
-  }
-
-  .age_table {
-    width: 10%;
-  }
-
-  .role_table {
-    width: 10%;
-  }
-  .sibling_table {
-    width: 10%;
-  }
 `;
 
-const StyledArrowDown = styled(RiArrowDownSFill)`
+const StyledArrowDown = styled(BiChevronDown)`
   width: 14px;
+  color: #777;
 `;
 
 const TableData = styled.td`
